@@ -10,9 +10,8 @@ accelerate>=0.27.0
 bitsandbytes>=0.41.0
 
 # Optional: for flash attention (faster training)
-flash-attn>=2.5.0
+# flash-attn>=2.5.0  # Requires CUDA compilation
 
 # Optional: for experiment tracking
 # wandb>=0.16.0
 # tensorboard>=2.15.0
-
