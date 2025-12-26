@@ -1,0 +1,90 @@
+### Qwen2 LoRA SFT Configuration Example
+### Usage: python train.py config_example.yaml
+### Override: python train.py config_example.yaml --learning_rate 1e-4 --num_train_epochs 5
+
+# =============================================================================
+# Model Configuration
+# =============================================================================
+model_name_or_path: Qwen/Qwen2-0.5B
+trust_remote_code: true
+use_flash_attention: true
+use_4bit: false
+use_8bit: false
+
+# =============================================================================
+# LoRA Configuration
+# =============================================================================
+use_lora: true                   # Set to false for full fine-tuning
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules: q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
+
+# Layer control (optional): specify which layers to apply LoRA
+# Formats supported:
+#   - Comma-separated: "0,1,2,3"
+#   - Range: "0-3" (inclusive, equals 0,1,2,3)
+#   - Mixed: "0,1,20-23"
+# layers_to_transform: null      # null = all layers (default)
+# layers_to_transform: "0-7"     # First 8 layers only
+# layers_to_transform: "16-23"   # Last 8 layers only (for 24-layer model)
+# layers_to_transform: "0,1,22,23"  # First 2 and last 2 layers
+
+# =============================================================================
+# Dataset Configuration
+# =============================================================================
+dataset_path: ./data/train.json  # Path to your training data (JSON/JSONL)
+# dataset_name: null             # Or use HuggingFace dataset name
+max_seq_length: 2048
+preprocessing_num_workers: 4
+model_name: Qwen                 # For {{name}} placeholder
+model_author: Alibaba Cloud      # For {{author}} placeholder
+
+# Evaluation dataset (choose one method):
+# eval_dataset_path: ./data/eval.json  # Separate eval file
+val_size: 0.1                    # Or split 10% from training data (0.0 = no eval)
+
+# =============================================================================
+# Training Configuration
+# =============================================================================
+output_dir: ./output/qwen2-lora-sft
+num_train_epochs: 3
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 4
+learning_rate: 2.0e-4
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+weight_decay: 0.01
+max_grad_norm: 1.0
+
+# Mixed precision
+bf16: true
+fp16: false
+
+# Logging & Saving
+logging_steps: 10
+save_steps: 100
+save_strategy: steps
+save_total_limit: 3
+overwrite_output_dir: true
+
+# =============================================================================
+# Evaluation Configuration
+# =============================================================================
+eval_strategy: steps             # "no", "steps", or "epoch"
+eval_steps: 100                  # Evaluate every N steps (when eval_strategy=steps)
+per_device_eval_batch_size: 4    # Batch size for evaluation
+
+# =============================================================================
+# Logging & Reporting
+# =============================================================================
+# TensorBoard logging
+report_to: tensorboard           # Choices: none, tensorboard, wandb, mlflow
+logging_dir: ./logs              # TensorBoard log directory
+
+# Alternative: disable all reporting
+# report_to: none
+
+# Optional: Resume from checkpoint
+# resume_from_checkpoint: null
+
